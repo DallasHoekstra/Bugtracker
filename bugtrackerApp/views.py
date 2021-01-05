@@ -32,6 +32,9 @@ def home(request):
     return render(request, 'bugtrackerApp/home.html', context)
 
 def about(request):
-    return render(request, 'bugtrackerApp/about.html')
+    context = {
+        'title': 'About'
+    }
+    return render(request, 'bugtrackerApp/about.html', context)
 
 

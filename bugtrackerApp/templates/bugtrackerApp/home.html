@@ -1,16 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
+
+{% extends "bugtrackerApp/base.html" %}
+{% block content %}
     {% for post in posts %}
         <h1>{{ post.title }}</h1>
         <p>By {{post.creator}} on {{post.date_posted}}</p>
         <p>{{post.content}}</p>
     {% endfor %}
-    
-</body>
-</html>
+<!-- endblock is the required portion. Adding "content" makes it more comprehensible -->
+{% endblock content %}
