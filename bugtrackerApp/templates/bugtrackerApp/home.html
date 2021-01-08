@@ -9,8 +9,14 @@
                     <a class="mr-2" href="#">{{ bug.creator }}</a>
                     <small class="text-muted">{{ bug.created_at }}</small>
                 </div>
-                <h2><a class="article-title" href="#">{{ bug.title }}</a></h2>
+                <h2><a class="article-title" href="{% url 'bug-detail' bug.id %}">{{ bug.title }}</a></h2>
                 <p class="article-content">{{ bug.description }}</p>
+                <div>
+                    {% if bug.creator == user %}
+                        <a class="btn btn-secondary btn-sm mt-1 mb-1"href="{% url 'bug-update' bug.id %}">Update</a>
+                        <a class="btn btn-danger btn-sm mt-1 mb-1"href="{% url 'bug-delete' bug.id %}">Delete</a>
+                    {% endif %}
+                </div>
             </div>
         </article>
     {% endfor %}
