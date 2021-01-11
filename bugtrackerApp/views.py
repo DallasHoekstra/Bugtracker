@@ -1,10 +1,12 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.contrib.auth.models import User
 
 from .models import Bug
+
 
 # List, Detail, Create, Update, Delete views are available
 # CRUD: Create, R(List, Detail), Update, Delete
@@ -22,6 +24,17 @@ class BugListView(ListView):
     context_object_name = 'bugs'
     ordering = ['-created_at']
     paginate_by = 1
+
+class UserBugListView(ListView):
+    model = Bug
+    template_name = 'bugtrackerApp/user_bugs.html' 
+    context_object_name = 'bugs'
+    paginate_by = 1
+
+    def get_queryset(self):
+        user = get_object_or_404(User, username=self.kwargs.get('username'))
+        return Bug.objects.filter(creator=user).order_by('-created_at')
+
 
 class BugDetailView(DetailView):
     model = Bug

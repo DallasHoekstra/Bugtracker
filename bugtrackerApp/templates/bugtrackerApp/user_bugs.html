@@ -1,8 +1,7 @@
 
 {% extends "bugtrackerApp/base.html" %}
-
 {% block content %}
-    <div class="bug-body">
+    <h1 class="mb-3">Bug reports created by {{ view.kwargs.username }} ({{ page_obj.paginator.count }})</h1>
     {% for bug in bugs %}
         <article class="media content-section">
             <img class="rounded-circle article-image" src="{{ bug.creator.profile.image.url }}">
@@ -39,5 +38,4 @@
             <a class="btn btn-outline-info mb-4"href="/?page={{ page_obj.paginator.num_pages }}">Final</a>
         {% endif %}
     {% endif %}
-    </div>
 {% endblock content %}

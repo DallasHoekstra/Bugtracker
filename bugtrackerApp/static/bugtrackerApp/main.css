@@ -3,7 +3,7 @@ body {
     color: #333333;
     margin-top: 5rem;
   }
-  
+
   h1, h2, h3, h4, h5, h6 {
     color: #444444;
   }
@@ -11,22 +11,29 @@ body {
   ul {
     margin: 0;
   }
+
+  .bug-body {
+      display: block;
+  }
   
   .bg-steel {
     background-color: #5f788a;
   }
-  
+
   .site-header .navbar-nav .nav-link {
     color: #cbd5db;
     margin-bottom: 1rem;
+    display:block;
   }
   
   .site-header .navbar-nav .nav-link:hover {
     color: #ffffff;
+    display:block;
   }
   
   .site-header .navbar-nav .nav-link.active {
     font-weight: 500;
+    display:block;
   }
   
   .content-section {
