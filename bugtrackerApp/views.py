@@ -21,6 +21,7 @@ class BugListView(ListView):
     template_name = 'bugtrackerApp/home.html' #<app>/<model>_<viewtype>.html
     context_object_name = 'bugs'
     ordering = ['-created_at']
+    paginate_by = 1
 
 class BugDetailView(DetailView):
     model = Bug
