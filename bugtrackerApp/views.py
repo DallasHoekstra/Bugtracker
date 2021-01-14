@@ -19,11 +19,16 @@ def home(request):
     return render(request, 'bugtrackerApp/home.html', context)
 
 class BugListView(ListView):
-    model = Bug
-    template_name = 'bugtrackerApp/home.html' #<app>/<model>_<viewtype>.html
     context_object_name = 'bugs'
+    template_name = 'bugtrackerApp/home.html' #<app>/<model>_<viewtype>.html
+    model = Bug
+
     ordering = ['-created_at']
     #paginate_by = 1
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['users'] = User.objects.all()
+        return context
 
 class UserBugListView(ListView):
     model = Bug
@@ -35,13 +40,12 @@ class UserBugListView(ListView):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
         return Bug.objects.filter(creator=user).order_by('-created_at')
 
-
 class BugDetailView(DetailView):
     model = Bug
 
 class BugCreateView(LoginRequiredMixin, CreateView):
     model = Bug
-    fields = ['title', 'status','description']
+    fields = ['title', 'lead', 'contributors', 'status','description']
 
     def form_valid(self, form):
         form.instance.creator = self.request.user
@@ -49,7 +53,7 @@ class BugCreateView(LoginRequiredMixin, CreateView):
 
 class BugUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Bug
-    fields = ['title', 'description', 'status']
+    fields = ['title', 'description', 'contributors', 'status', 'lead']
 
     def test_func(self):
         bug = self.get_object()
@@ -69,10 +73,6 @@ class BugDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             return True
         else:
             return False
-
-    
-
-
 
 def about(request):
     context = {

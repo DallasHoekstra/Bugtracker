@@ -11,13 +11,19 @@
                         <div class="media-body">
                             <div class="article-metadata">
                                 <div>
-                                    <a class="mr-2" href="{% url 'user-bugs' bug.creator.username %}">{{ bug.creator }}</a>
+                                    {% if bug.lead != "" %}
+                                       <p>{{ bug.lead }}</p>
+                                    {% else %}
+                                        <a class="mr-2" href="{% url 'user-bugs' bug.creator.username %}">{{ bug.creator }}</a>
+                                    {% endif %}
+                                    
                                     <small class="text-muted" style="text-align: left;">Created: {{ bug.created_at }}</small>
                                     <small class="text-muted" style="text-align: right;">Updated: {{ bug.last_modified }}</small>
                                 </div>
                             </div>
                             <h2><a class="article-title" href="{% url 'bug-detail' bug.id %}">{{ bug.title }}</a></h2>
                             <p class="article-content">{{ bug.description }}</p>
+                            <p> {{ bug.creator.email }}</p>
                             <div>
                                 {% if bug.creator == user %}
                                     <a class="btn btn-secondary btn-sm mt-1 mb-1"href="{% url 'bug-update' bug.id %}">Update</a>
@@ -39,7 +45,11 @@
                         <div class="media-body">
                             <div class="article-metadata">
                                 <div>
-                                    <a class="mr-2" href="{% url 'user-bugs' bug.creator.username %}">{{ bug.creator }}</a>
+                                    {% if bug.lead != None %}
+                                       <p>{{ bug.lead }}</p>
+                                    {% else %}
+                                        <a class="mr-2" href="{% url 'user-bugs' bug.creator.username %}">{{ bug.creator }}</a>
+                                    {% endif %}
                                     <small class="text-muted" style="text-align: left;">Created: {{ bug.created_at }}</small>
                                     <small class="text-muted" style="text-align: right;">Updated: {{ bug.last_modified }}</small>
                                 </div>
@@ -66,7 +76,11 @@
                         <div class="media-body">
                             <div class="article-metadata">
                                 <div>
-                                    <a class="mr-2" href="{% url 'user-bugs' bug.creator.username %}">{{ bug.creator }}</a>
+                                    {% if bug.lead != None %}
+                                       <p>{{ bug.lead }}</p>
+                                    {% else %}
+                                        <a class="mr-2" href="{% url 'user-bugs' bug.creator.username %}">{{ bug.creator }}</a>
+                                    {% endif %}
                                     <small class="text-muted" style="text-align: left;">Created: {{ bug.created_at }}</small>
                                     <small class="text-muted" style="text-align: right;">Updated: {{ bug.last_modified }}</small>
                                 </div>
@@ -97,7 +111,11 @@
                         <div class="media-body">
                             <div class="article-metadata">
                                 <div>
-                                    <a class="mr-2" href="{% url 'user-bugs' bug.creator.username %}">{{ bug.creator }}</a>
+                                    {% if bug.lead != None %}
+                                       <p>{{ bug.lead }}</p>
+                                    {% else %}
+                                        <a class="mr-2" href="{% url 'user-bugs' bug.creator.username %}">{{ bug.creator }}</a>
+                                    {% endif %}
                                     <small class="text-muted" style="text-align: left;">Created: {{ bug.created_at }}</small>
                                     <small class="text-muted" style="text-align: right;">Updated: {{ bug.last_modified }}</small>
                                 </div>
