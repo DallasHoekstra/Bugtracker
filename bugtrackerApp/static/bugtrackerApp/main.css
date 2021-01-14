@@ -14,18 +14,20 @@ body {
 
   .bug-body {
     display: flex;
-    min-width:max-content;
     min-height: 100%;
+    margin-left: 0;
+    padding-left: 0;
+    overflow: scroll;
   }
 
   .bug-status-container {
     display: flex;
-    min-width: 50%;
+    min-width: 25%;
     min-height: 100%;
-    max-width:50%;
+    max-width:  25%;
     flex-flow: column;
-    outline: 1px solid grey;
-    margin-left: 5px;
+    outline: 1px solid #dddddd;
+    margin-right: 5px;
   }
   
   .bg-steel {
@@ -55,6 +57,7 @@ body {
     border-radius: 3px;
     margin-top: 5px;
     margin-bottom: 20px;
+    max-width:100%
   }
   
   .article-title {
