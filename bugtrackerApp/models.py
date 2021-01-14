@@ -17,7 +17,7 @@ class Bug(models.Model):
     creator = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(default=timezone.now)
     last_modified = models.DateTimeField(auto_now=True)
-    status = models.ForeignKey(Status, on_delete=models.CASCADE, default=2)
+    status = models.ForeignKey(Status, on_delete=models.CASCADE, default=0)
     description = models.TextField()
 
     def __str__(self):
