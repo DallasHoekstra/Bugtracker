@@ -23,13 +23,13 @@ class BugListView(ListView):
     template_name = 'bugtrackerApp/home.html' #<app>/<model>_<viewtype>.html
     context_object_name = 'bugs'
     ordering = ['-created_at']
-    paginate_by = 1
+    #paginate_by = 1
 
 class UserBugListView(ListView):
     model = Bug
     template_name = 'bugtrackerApp/user_bugs.html' 
     context_object_name = 'bugs'
-    paginate_by = 1
+    #paginate_by = 1
 
     def get_queryset(self):
         user = get_object_or_404(User, username=self.kwargs.get('username'))
@@ -49,7 +49,7 @@ class BugCreateView(LoginRequiredMixin, CreateView):
 
 class BugUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Bug
-    fields = ['title', 'description']
+    fields = ['title', 'description', 'status']
 
     def test_func(self):
         bug = self.get_object()
