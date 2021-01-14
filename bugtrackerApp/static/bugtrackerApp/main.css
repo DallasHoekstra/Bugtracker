@@ -14,10 +14,18 @@ body {
 
   .bug-body {
     display: flex;
-    flex-flow: row wrap;
-    justify-content: space-around; /*flex-start | flex-end | center | space-between | space-around*/
-    align-items: stretch; /*flex-start | flex-end | center | baseline | stretch*/
-    align-content: flex-end;
+    min-width:max-content;
+    min-height: 100%;
+  }
+
+  .bug-status-container {
+    display: flex;
+    min-width: 50%;
+    min-height: 100%;
+    max-width:50%;
+    flex-flow: column;
+    outline: 1px solid grey;
+    margin-left: 5px;
   }
   
   .bg-steel {

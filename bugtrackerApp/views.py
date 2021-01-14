@@ -41,7 +41,7 @@ class BugDetailView(DetailView):
 
 class BugCreateView(LoginRequiredMixin, CreateView):
     model = Bug
-    fields = ['title', 'description']
+    fields = ['title', 'status','description']
 
     def form_valid(self, form):
         form.instance.creator = self.request.user

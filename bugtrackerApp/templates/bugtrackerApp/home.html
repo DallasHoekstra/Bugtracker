@@ -4,15 +4,17 @@
 {% block content %}
     <div class="bug-body">
         <div class="bug-status-container">
+            <p class="title" style="text-align: center;">Unassigned</p>
             {% for bug in bugs %}
                 {% if bug.status.code == 0 %}
                         <article class="media content-section" style=min-width:500px;>
-                        <img class="rounded-circle article-image" src="{{ bug.creator.profile.image.url }}">
                         <div class="media-body">
                             <div class="article-metadata">
-                                <a class="mr-2" href="{% url 'user-bugs' bug.creator.username %}">{{ bug.creator }}</a>
-                                <p title="{{ bug.status.description }}"> {{ bug.status.name }} </p>
-                                <small class="text-muted">{{ bug.created_at }}</small>
+                                <div>
+                                    <a class="mr-2" href="{% url 'user-bugs' bug.creator.username %}">{{ bug.creator }}</a>
+                                    <small class="text-muted" style="text-align: left;">Created: {{ bug.created_at }}</small>
+                                    <small class="text-muted" style="text-align: right;">Updated: {{ bug.last_modified }}</small>
+                                </div>
                             </div>
                             <h2><a class="article-title" href="{% url 'bug-detail' bug.id %}">{{ bug.title }}</a></h2>
                             <p class="article-content">{{ bug.description }}</p>
@@ -33,16 +35,18 @@
         </div>
 
         <div class="bug-status-container">
+            <p class="title" style="text-align: center;">Assigned</p>
             {% for bug in bugs %}
                 {% if bug.status.code == 1 %}
 
                     <article class="media content-section" style=min-width:500px;>
-                        <img class="rounded-circle article-image" src="{{ bug.creator.profile.image.url }}">
                         <div class="media-body">
                             <div class="article-metadata">
-                                <a class="mr-2" href="{% url 'user-bugs' bug.creator.username %}">{{ bug.creator }}</a>
-                                <p title="{{ bug.status.description }}"> {{ bug.status.name }} </p>
-                                <small class="text-muted">{{ bug.created_at }}</small>
+                                <div>
+                                    <a class="mr-2" href="{% url 'user-bugs' bug.creator.username %}">{{ bug.creator }}</a>
+                                    <small class="text-muted" style="text-align: left;">Created: {{ bug.created_at }}</small>
+                                    <small class="text-muted" style="text-align: right;">Updated: {{ bug.last_modified }}</small>
+                                </div>
                             </div>
                             <h2><a class="article-title" href="{% url 'bug-detail' bug.id %}">{{ bug.title }}</a></h2>
                             <p class="article-content">{{ bug.description }}</p>
