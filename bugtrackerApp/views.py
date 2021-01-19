@@ -1,12 +1,12 @@
-from django.shortcuts import get_object_or_404, render
+from django.shortcuts import get_list_or_404, get_object_or_404, render, redirect
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
 
-from .models import Bug
-
+from .models import Bug, Project
+from .managers import ProjectManager
 
 # List, Detail, Create, Update, Delete views are available
 # CRUD: Create, R(List, Detail), Update, Delete
@@ -22,13 +22,8 @@ class BugListView(ListView):
     context_object_name = 'bugs'
     template_name = 'bugtrackerApp/home.html' #<app>/<model>_<viewtype>.html
     model = Bug
-
     ordering = ['-created_at']
-    #paginate_by = 1
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['users'] = User.objects.all()
-        return context
+
 
 class UserBugListView(ListView):
     model = Bug
@@ -45,7 +40,7 @@ class BugDetailView(DetailView):
 
 class BugCreateView(LoginRequiredMixin, CreateView):
     model = Bug
-    fields = ['title', 'lead', 'contributors', 'status','description']
+    fields = ['title', 'project', 'lead', 'contributors', 'status','description']
 
     def form_valid(self, form):
         form.instance.creator = self.request.user
@@ -53,7 +48,7 @@ class BugCreateView(LoginRequiredMixin, CreateView):
 
 class BugUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Bug
-    fields = ['title', 'description', 'contributors', 'status', 'lead']
+    fields = ['title', 'project', 'description', 'contributors', 'status', 'lead']
 
     def test_func(self):
         bug = self.get_object()
@@ -73,6 +68,45 @@ class BugDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
             return True
         else:
             return False
+
+class ProjectCreateView(LoginRequiredMixin, CreateView):
+    model = Project
+    fields = ['title', 'project_lead', 'project_contributors', 'description']
+    success_url = ''
+
+    def form_valid(self, form):
+        form.instance.project_lead = self.request.user
+        return super().form_valid(form)
+
+class ProjectUpdateView(LoginRequiredMixin, UpdateView):
+    model = Project
+    fields = ['title', 'project_lead', 'project_contributors', 'description']
+
+    # def test_func(self):
+    #     bug = self.get_object()
+    #     if self.request.user == bug.creator:
+    #         return True
+    #     else:
+    #         return False
+
+class ProjectListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+    context_object_name = "bugs"
+
+    def get_queryset(self):
+        project_bugs = Bug.objects.get_project_bugs(self.kwargs.get("pk"))
+        return project_bugs
+    
+    def test_func(self):
+        project = Project.objects.get(id=self.kwargs.get('pk'))
+        contributors = project.project_contributors.all()
+        for username in contributors:
+          if username == self.request.user:
+                return True
+        return False
+            
+
+
+    
 
 def about(request):
     context = {
