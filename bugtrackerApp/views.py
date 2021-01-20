@@ -1,4 +1,5 @@
 from django.shortcuts import get_list_or_404, get_object_or_404, render, redirect
+from django.urls import reverse
 from django.views.generic import ListView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
@@ -18,11 +19,11 @@ def home(request):
     }
     return render(request, 'bugtrackerApp/home.html', context)
 
-class BugListView(ListView):
-    context_object_name = 'bugs'
-    template_name = 'bugtrackerApp/home.html' #<app>/<model>_<viewtype>.html
-    model = Bug
-    ordering = ['-created_at']
+# class BugListView(ListView):
+#     context_object_name = 'bugs'
+#     template_name = 'bugtrackerApp/home.html' #<app>/<model>_<viewtype>.html
+#     model = Bug
+#     ordering = ['-created_at']
 
 
 class UserBugListView(ListView):

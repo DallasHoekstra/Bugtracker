@@ -56,6 +56,6 @@ class Bug(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('bug-detail', kwargs={'pk': self.pk})
+        return reverse('project-detail', kwargs={'pk': self.project_id})
 
     
