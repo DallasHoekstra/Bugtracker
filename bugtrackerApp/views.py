@@ -19,11 +19,10 @@ def home(request):
     }
     return render(request, 'bugtrackerApp/home.html', context)
 
-# class BugListView(ListView):
-#     context_object_name = 'bugs'
-#     template_name = 'bugtrackerApp/home.html' #<app>/<model>_<viewtype>.html
-#     model = Bug
-#     ordering = ['-created_at']
+class BugListView(ListView):
+    context_object_name = 'bugs'
+    model = Bug
+    ordering = ['-created_at']
 
 
 class UserBugListView(ListView):
@@ -90,7 +89,7 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
     #     else:
     #         return False
 
-class ProjectListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
+class ProjectView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     context_object_name = "bugs"
 
     def get_queryset(self):
@@ -100,12 +99,19 @@ class ProjectListView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     def test_func(self):
         project = Project.objects.get(id=self.kwargs.get('pk'))
         contributors = project.project_contributors.all()
+        lead = project.project_lead
+        if lead == self.request.user:
+            return True
         for username in contributors:
           if username == self.request.user:
                 return True
         return False
             
-
+class UserProjectsView(LoginRequiredMixin, ListView):
+    context_object_name="projects"
+    def get_queryset(self):
+        user_projects = Project.objects.get_user_projects(self.request.user)
+        return user_projects
 
     
 

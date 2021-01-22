@@ -1,14 +1,14 @@
 from django.urls import path
 
-from .views import BugListView, BugDetailView, BugCreateView, BugUpdateView, BugDeleteView, ProjectCreateView, ProjectListView, UserBugListView, ProjectUpdateView
+from .views import BugListView, BugDetailView, BugCreateView, BugUpdateView, BugDeleteView, ProjectCreateView, ProjectView, UserBugListView, ProjectUpdateView, UserProjectsView
 from . import views
 
 
 
 urlpatterns = [
-    # django trims the already-matched parts of a url when working with the include function. An empty string means that the url accessed
-    # was /bugtrackerapp
-    path('', BugListView.as_view(), name='bugtrackerapp-home'),
+    # django include from top level include() trims the already-matched parts of a url when working with the include function. 
+    # An empty string means that the url accessed was /bugtrackerapp.
+    path('', UserProjectsView.as_view(template_name="bugtrackerApp/home.html"), name='bugtrackerapp-home'),
     path('user/<str:username>', UserBugListView.as_view(), name='user-bugs'),
     path('about/', views.about, name='bugtrackerapp-about'),
 
@@ -18,10 +18,9 @@ urlpatterns = [
     path('bug/new/', BugCreateView.as_view(), name='bug-create'),
 
     path('project/new/', ProjectCreateView.as_view(), name='project-create'),
-    path('project/<int:pk>/', ProjectListView.as_view(template_name="bugtrackerApp/project_list.html"), name='project-detail'),
-    path('project/<int:pk>/update/', ProjectUpdateView.as_view(template_name="bugtrackerApp/project_form.html"), name='project-update')
-    #path('project/', projectDetailView, name='project-detail')
-    
+    path('project/<int:pk>/', ProjectView.as_view(template_name="bugtrackerApp/project_list.html"), name='project-detail'),
+    path('project/<int:pk>/update/', ProjectUpdateView.as_view(template_name="bugtrackerApp/project_form.html"), name='project-update'),
+    path('allbugs/', BugListView.as_view(), name='bug-list')
 ]
 
 

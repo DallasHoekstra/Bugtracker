@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.contrib.auth.models import User
 from django.urls import reverse
 
-from .managers import ProjectManager
+from .managers import ProjectManager, BugManager
 
 
 
@@ -39,6 +39,9 @@ class Project(models.Model):
     def get_absolute_url(self):
         return reverse('project-detail', kwargs={'pk': self.pk})
 
+    objects = ProjectManager()
+
+
 class Bug(models.Model):
     title = models.CharField(max_length=200)
     creator = models.ForeignKey(User, on_delete=models.CASCADE, related_name="creator")
@@ -50,7 +53,7 @@ class Bug(models.Model):
     status = models.ForeignKey(Status, on_delete=models.CASCADE, default=0)
     description = models.TextField()
 
-    objects = ProjectManager()
+    objects = BugManager()
 
     def __str__(self):
         return self.title
