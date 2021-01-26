@@ -82,13 +82,6 @@ class ProjectUpdateView(LoginRequiredMixin, UpdateView):
     model = Project
     fields = ['title', 'project_lead', 'project_contributors', 'description']
 
-    # def test_func(self):
-    #     bug = self.get_object()
-    #     if self.request.user == bug.creator:
-    #         return True
-    #     else:
-    #         return False
-
 class ProjectView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     context_object_name = "bugs"
 
