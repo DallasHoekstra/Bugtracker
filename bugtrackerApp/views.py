@@ -100,11 +100,11 @@ class ProjectView(LoginRequiredMixin, UserPassesTestMixin, ListView):
         project = Project.objects.get(id=self.kwargs.get('pk'))
         contributors = project.project_contributors.all()
         lead = project.project_lead
-        if lead == self.request.user:
+        user = self.request.user
+        if user == lead:
             return True
-        for username in contributors:
-          if username == self.request.user:
-                return True
+        if user in contributors:
+            return True
         return False
             
 class UserProjectsView(LoginRequiredMixin, ListView):
