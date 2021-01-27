@@ -1,3 +1,4 @@
+from django.forms import forms
 from django.shortcuts import get_list_or_404, get_object_or_404, render, redirect
 from django.urls import reverse
 from django.views.generic import ListView
@@ -8,7 +9,7 @@ from django.contrib.auth.models import User
 
 from .models import Bug, Project
 from .managers import ProjectManager
-
+from .forms import ProjectValidationMixin
 # List, Detail, Create, Update, Delete views are available
 # CRUD: Create, R(List, Detail), Update, Delete
 
@@ -69,14 +70,14 @@ class BugDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
         else:
             return False
 
-class ProjectCreateView(LoginRequiredMixin, CreateView):
+class ProjectCreateView(ProjectValidationMixin, LoginRequiredMixin, CreateView):
     model = Project
     fields = ['title', 'project_lead', 'project_contributors', 'description']
     success_url = ''
 
-    def form_valid(self, form):
-        form.instance.project_lead = self.request.user
-        return super().form_valid(form)
+    # def form_valid(self, form):
+    #     form.instance.project_lead = self.request.user
+    #     return super().form_valid(form)
 
 class ProjectUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Project

@@ -143,10 +143,20 @@ class ViewTests(TestCase):
         for field in field_list:
             assert field in str(response.content)
 
-    def test_project_update_view_updates_fields_as_expected(self):
+    def test_project_create_defaults_project_lead_to_user(self):
         self.user=self.Bob
         self.client.force_login(self.user)
 
-        response=self.client.get(reverse('project-update', args=[self.project.id]))
+
+        project = { 'title':'test_project', 'description':'A default lead test project'}
+        self.client.post(reverse('project-create'), 
+                data={'title':project['title'], 'description':project['description']})
+        assert Project.objects.get(title="test_project").description == project['description']
+
+    # def test_project_update_view_updates_fields_as_expected(self):
+    #     self.user=self.Bob
+    #     self.client.force_login(self.user)
+
+    #     response=self.client.get(reverse('project-update', args=[self.project.id]))
 
     
