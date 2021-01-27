@@ -147,11 +147,25 @@ class ViewTests(TestCase):
         self.user=self.Bob
         self.client.force_login(self.user)
 
-
         project = { 'title':'test_project', 'description':'A default lead test project'}
         self.client.post(reverse('project-create'), 
                 data={'title':project['title'], 'description':project['description']})
-        assert Project.objects.get(title="test_project").description == project['description']
+        assert Project.objects.get(title="test_project").project_lead == self.user
+
+    def test_project_create_uses_provided_project_lead(self):
+        self.user=self.Bob
+        self.client.force_login(self.user)
+
+        project = { 'title':'test_project', 'description':'A default lead test project',
+                    'project_lead':self.Alice.id }
+        # form name is project_lead, model fieldname is project_lead_id
+        self.client.post(reverse('project-create'), 
+                data={'title':project['title'], 'description':project['description'],
+                    'project_lead':project['project_lead']})
+        project_lead_id = Project.objects.get(title="test_project").project_lead_id
+        print(f"project lead ID is {project_lead_id}, Alice ID is {self.Alice.id}")
+        assert  project_lead_id == self.Alice.id
+
 
     # def test_project_update_view_updates_fields_as_expected(self):
     #     self.user=self.Bob
