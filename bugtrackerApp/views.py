@@ -78,9 +78,20 @@ class ProjectCreateView(LoginRequiredMixin, CreateView):
         form.instance.project_lead = self.request.user
         return super().form_valid(form)
 
-class ProjectUpdateView(LoginRequiredMixin, UpdateView):
+class ProjectUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Project
     fields = ['title', 'project_lead', 'project_contributors', 'description']
+
+    def test_func(self):
+        project = Project.objects.get(id=self.kwargs.get('pk'))
+        contributors = project.project_contributors.all()
+        lead = project.project_lead
+        user = self.request.user
+        if user == lead:
+            return True
+        if user in contributors:
+            return True
+        return False
 
 class ProjectView(LoginRequiredMixin, UserPassesTestMixin, ListView):
     context_object_name = "bugs"

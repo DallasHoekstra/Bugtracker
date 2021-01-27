@@ -105,3 +105,48 @@ class ViewTests(TestCase):
             print("Bugs in response")
             for object in response.context["object_list"]:
                 print(object)
+
+    def test_project_update_view_not_accessible_by_unauthorized_user(self):
+        self.user=self.Alice
+        self.client.force_login(self.user)
+
+        response=self.client.get(reverse('project-update', args=[self.project.id]))
+        self.assertEqual(response.status_code, 403)
+    
+    # Are the ones that check web-page/view functionality with database
+    # more integration tests than a unit tests?
+    def test_project_view_accessible_by_lead(self):
+        self.user=self.Bob
+        self.client.force_login(self.user)
+
+        response=self.client.get(reverse('project-update', args=[self.project.id]))
+        self.assertEqual(response.status_code, 200)
+
+    def test_project_view_accessible_by_contributor(self):
+        self.user=self.Charlie
+        self.client.force_login(self.user)
+
+        response=self.client.get(reverse('project-update', args=[self.project.id]))
+        self.assertEqual(response.status_code, 200)
+
+    
+    def test_project_update_view_displays_at_least_expected_fields(self):
+        self.user=self.Bob
+        self.client.force_login(self.user)
+
+        response=self.client.get(reverse('project-update', args=[self.project.id]))
+        field_list = ["title", "lead", "contributors", "description"]
+
+        if verbose:
+            print(str(response.content))
+
+        for field in field_list:
+            assert field in str(response.content)
+
+    def test_project_update_view_updates_fields_as_expected(self):
+        self.user=self.Bob
+        self.client.force_login(self.user)
+
+        response=self.client.get(reverse('project-update', args=[self.project.id]))
+
+    
