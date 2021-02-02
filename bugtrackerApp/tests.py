@@ -35,13 +35,41 @@ class BugTests(TestCase):
     @classmethod
     def setUpClass(self):
         super(BugTests, self).setUpClass()
-        pass
+        self.Alice=createUser("Alice", "testuserpassword123")
+        self.Bob=createUser("Bob", "testuserpassword123")
+        self.Charlie=createUser("Charlie", "testuserpassword123")
+        self.project=createProject("classified_project", lead=self.Bob, contributors=[self.Charlie])
+        self.unassigned = createStatus(0, name="Unassigned", description="This bug has not been assigned to a developer yet")
+        self.assigned = createStatus(1, name="Assigned", description="This bug has had a developer designated as lead")
+        self.bug1=createBug(title="This is bug 1", creator=self.Charlie, status=self.assigned, lead=self.Charlie, contributors=[self.Charlie], project=self.project)
+        self.bug2=createBug(title="This is bug 2", creator=self.Charlie, status=self.assigned, lead=self.Charlie, contributors=[self.Charlie], project=self.project)
+        self.bug3=createBug(title="This is bug 3", creator=self.Bob, status=self.assigned, lead=self.Bob, contributors=[self.Charlie, self.Bob])
+        self.bug4=createBug(title="This is bug 4", creator=self.Bob, status=self.unassigned)
 
     def setUp(self):
         pass
 
-    def test_bug_status_must_be_0_if_not_assigned(self):
-        pass
+    def test_bug_status_must_be_0_iff_not_assigned(self):
+        bugs_without_lead = Bug.objects.filter(lead_id=None)
+        for bug in bugs_without_lead:
+            if verbose:
+                print(bug.status.code)
+            assert bug.status.code == 0
+        
+        unassigned_bugs = Bug.objects.filter(status=1)
+        for bug in unassigned_bugs:
+            if verbose:
+                print(bug.status.code)
+            if bug.status.code == 0:
+                if verbose:
+                    print(bug.lead_id)
+                    print(bug)
+                assert bug.lead_id == None
+
+    def test_bug_raises_error_without_a_creator(self):
+        with self.assertRaises(TypeError):
+            self.bug99=createBug(title="This is bug 99", status=self.unassigned)
+
 
 class ViewTests(TestCase):
     @classmethod
@@ -53,10 +81,9 @@ class ViewTests(TestCase):
         self.project=createProject("classified_project", lead=self.Bob, contributors=[self.Charlie])
         self.unassigned = createStatus(0, name="Unassigned", description="This bug has not been assigned to a developer yet")
         self.assigned = createStatus(1, name="Assigned", description="This bug has had a developer designated as lead")
-        self.bug1=createBug(title="This is bug 1", creator=self.Charlie, status=self.unassigned, lead=self.Charlie, contributors=[self.Charlie], project=self.project)
-        self.bug2=createBug(title="This is bug 2", creator=self.Charlie, status=self.unassigned, lead=self.Charlie, contributors=[self.Charlie], project=self.project)
-        self.bug3=createBug(title="This is bug 3", creator=self.Bob, status=self.unassigned, lead=self.Bob, contributors=[self.Charlie, self.Bob])
-
+        self.bug1=createBug(title="This is bug 1", creator=self.Charlie, status=self.assigned, lead=self.Charlie, contributors=[self.Charlie], project=self.project)
+        self.bug2=createBug(title="This is bug 2", creator=self.Charlie, status=self.assigned, lead=self.Charlie, contributors=[self.Charlie], project=self.project)
+        self.bug3=createBug(title="This is bug 3", creator=self.Bob, status=self.assigned, lead=self.Bob, contributors=[self.Charlie, self.Bob])
 
     def setUp(self):
         client = Client()
@@ -129,7 +156,6 @@ class ViewTests(TestCase):
         response=self.client.get(reverse('project-update', args=[self.project.id]))
         self.assertEqual(response.status_code, 200)
 
-    
     def test_project_update_view_displays_at_least_expected_fields(self):
         self.user=self.Bob
         self.client.force_login(self.user)
@@ -163,8 +189,12 @@ class ViewTests(TestCase):
                 data={'title':project['title'], 'description':project['description'],
                     'project_lead':project['project_lead']})
         project_lead_id = Project.objects.get(title="test_project").project_lead_id
-        print(f"project lead ID is {project_lead_id}, Alice ID is {self.Alice.id}")
+        if verbose:
+            print(f"project lead ID is {project_lead_id}, Alice ID is {self.Alice.id}")
         assert  project_lead_id == self.Alice.id
+
+
+
 
 
     # def test_project_update_view_updates_fields_as_expected(self):
