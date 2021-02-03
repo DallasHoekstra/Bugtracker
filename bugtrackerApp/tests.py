@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.test import TestCase
 from django.test.utils import setup_test_environment
 from django.test import Client
@@ -5,11 +6,13 @@ from django.urls import reverse
 from django.db import models
 from django.contrib.auth.models import User
 from django.conf import settings
+from datetime import datetime, timezone, timedelta
 
 from .models import Bug, Project, Status
 
 # Create your tests here.
 verbose = False
+TZ = timezone(timedelta(hours=8))
 
 def createUser(username, password):
     return User.objects.create(username=username, email="example@example.com", password=password)
@@ -19,8 +22,11 @@ def createProject(title, lead=None, description="default description", contribut
     project.project_contributors.set(contributors)
     return project
 
-def createBug(title, creator, status, lead=None, contributors=[], description="default bug description", project=None):
-    bug = Bug.objects.create(title=title, creator=creator, status=status, lead=lead, description=description, project=project)    
+def createBug(title, creator, status, lead=None, contributors=[], description="default bug description", project=None, **kwargs):
+    date = datetime.now(TZ)
+    if 'date' in kwargs.keys():
+        date = kwargs['date']
+    bug = Bug.objects.create(title=title, creator=creator, created_at=date, status=status, lead=lead, description=description, project=project)    
     bug.contributors.set(contributors)
     return bug
     
@@ -46,10 +52,32 @@ class BugTests(TestCase):
         self.bug3=createBug(title="This is bug 3", creator=self.Bob, status=self.assigned, lead=self.Bob, contributors=[self.Charlie, self.Bob])
         self.bug4=createBug(title="This is bug 4", creator=self.Bob, status=self.unassigned)
 
+        
+
+
     def setUp(self):
         pass
 
+    # self.user=self.Bob
+    #     self.client.force_login(self.user)
+
+    #     project = { 'title':'test_project', 'description':'A default lead test project'}
+    #     self.client.post(reverse('project-create'), 
+    #             data={'title':project['title'], 'description':project['description']})
+    #     assert Project.objects.get(title="test_project").project_lead == self.user
+
+    # Currently this just throws errors after something has been created in the database. This does
+    # not enforce behavior preventing creation of an item in the first place. What the tests need
+    # to test is whether a command to create an invalid entry raises an error of some form. To
+    # do this with the database requires adding validation to fields in the model (I believe)
+    # Other things that should throw errors are changing the date and the last_modified date to be
+    # anything other than the current time (at time of assignment). It should also not be possible to 
+    # assign a non-existent status (actually, that should be enforced by model behavior. ...then again
+    # part of the point of tests is also future proofing against, say, changing the model without 
+    # considering how that will affect behavior). 
     def test_bug_status_must_be_0_iff_not_assigned(self):
+
+
         bugs_without_lead = Bug.objects.filter(lead_id=None)
         for bug in bugs_without_lead:
             if verbose:
@@ -66,9 +94,55 @@ class BugTests(TestCase):
                     print(bug)
                 assert bug.lead_id == None
 
+
+    def test_using_nonexistent_status_raises_exception(self):
+        with self.assertRaises(ValueError):
+            createBug(title="title", creator=self.Alice, lead=self.Bob, status=102343)
+            createBug(title="title", creator=self.Alice, lead=self.Bob, status=91919)
+        
+
     def test_bug_raises_error_without_a_creator(self):
         with self.assertRaises(TypeError):
             self.bug99=createBug(title="This is bug 99", status=self.unassigned)
+
+    # Question about constraints posted to stack overflow
+    # def test_created_at_is_exactly_date_created(self):
+    #     current_date = datetime.now(TZ)
+    #     past_date = datetime(year=current_date.year, month=current_date.month, day=current_date.day,
+    #                             hour=current_date.hour, minute=current_date.minute,
+    #                             second=current_date.second, microsecond=current_date.microsecond-11,
+    #                             tzinfo=current_date.tzinfo)
+    #     invalid_bug = {'title':"This is bug 3", 'creator':self.Bob, 'date':past_date, 'status':self.unassigned}
+    #     with self.assertRaises(ValidationError):
+    #         createBug(title=invalid_bug['title'], creator=invalid_bug['creator'], 
+    #                     status=invalid_bug['status'], date=invalid_bug['date'])
+
+
+    def test_last_modified_cannot_be_assigned_custom_time(self):
+        pass
+
+    def test_invalid_title_raises_exception(self):
+        pass
+
+    def invalid_creator_raises_exception(self):
+        pass
+
+    def invalid_lead_raises_exception(self):
+        pass
+
+    # How would duplicate contributor entries (eg: alice, bob, bob) affect the orm?
+    def test_django_eliminates_duplicate_contributors(self):
+        invalid_bug = {'title':'Duplicates in contributor column', 'creator':self.Alice, 
+                        'status':self.assigned, 'lead':self.Alice, 
+                        'contributors':[self.Bob, self.Charlie, self.Bob]}
+
+        invalid_entry = createBug(title=invalid_bug['title'], creator=invalid_bug['creator'], 
+                                    status=invalid_bug['status'], lead=invalid_bug['lead'], 
+                                    contributors=invalid_bug['contributors'])
+        if verbose:
+            print(f"Title is: {invalid_entry.title}, creator is: {invalid_entry.creator}, \
+                    status is: {invalid_entry.status}, lead is :{invalid_entry.lead}.")
+            print(f"ContributorsManager: {invalid_entry.contributors.all()}")
 
 
 class ViewTests(TestCase):
@@ -140,8 +214,6 @@ class ViewTests(TestCase):
         response=self.client.get(reverse('project-update', args=[self.project.id]))
         self.assertEqual(response.status_code, 403)
     
-    # Are the ones that check web-page/view functionality with database
-    # more integration tests than a unit tests?
     def test_project_view_accessible_by_lead(self):
         self.user=self.Bob
         self.client.force_login(self.user)
