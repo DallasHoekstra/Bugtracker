@@ -1,6 +1,6 @@
-settings.py
 venv/
 __pycache__/
 bugtrackerApp/migrations/
 users/migrations
 profile_pics/
+
