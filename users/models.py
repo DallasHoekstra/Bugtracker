@@ -6,7 +6,7 @@ from django.conf import settings
 
 class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    image = models.ImageField(default=settings.MEDIA_ROUTE + '\caffeinate.jpg', upload_to=settings.MEDIA_ROUTE + '\\')
+    image = models.ImageField(default=settings.MEDIA_ROUTE + '\caffeinate.jpg', upload_to='profile_images')
 
     def __str__(self):
         return f'{self.user.username} Profile'
