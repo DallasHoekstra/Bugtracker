@@ -7,6 +7,7 @@ from django.contrib import messages
 
 #views have to receive the request
 def register(request):
+    print("Hello world")
     if request.method == 'POST':
         form = UserRegisterForm(request.POST)
         if form.is_valid():
