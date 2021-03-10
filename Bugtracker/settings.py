@@ -21,12 +21,12 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('BUGTRACKER_SECRET_KEY')
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '164.90.145.162']
 
 
 # Application definition
@@ -122,6 +122,28 @@ USE_L10N = True
 
 USE_TZ = True
 
+LOGGING = {
+    'version':1,
+    'disable_existing_loggers':False,
+    'handlers': {
+        'file': {
+            'level':'DEBUG',
+            'class':'logging.FileHandler',
+            'filename':'/var/www/html/Bugtracker/Bugtracker/django.log',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers':['file'],
+            'level':'DEBUG',
+            'propogate':True,
+        },
+        'bugtrackerApp':{
+            'handlers':['file'],
+            'level':'DEBUG'
+        }
+    }
+}
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
