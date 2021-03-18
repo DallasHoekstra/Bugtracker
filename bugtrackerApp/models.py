@@ -1,9 +1,11 @@
 from django.db import models
+from django.db.models.deletion import SET_NULL
 from django.db.models.fields import related
 from django.db.models.fields.related import create_many_to_many_intermediary_model
 from django.utils import timezone
 from django.contrib.auth.models import User
 from django.urls import reverse
+from datetime import timedelta
 
 from .managers import ProjectManager, BugManager
 
@@ -41,6 +43,18 @@ class Project(models.Model):
 
     objects = ProjectManager()
 
+class Iteration(models.Model):
+
+    def iteration_end_date():
+        now = timezone.now()
+        return now + timedelta(days=7)
+
+    title = models.CharField(max_length=50)
+    start_date = models.DateTimeField(default=timezone.now)
+    end_date = models.DateTimeField(default=iteration_end_date)
+    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    team_members = models.ManyToManyField(User, default=None, blank=True, null=True, related_name="team_members")
+    velocity = models.FloatField(default=.7)
 
 class Bug(models.Model):
     title = models.CharField(max_length=200)
@@ -52,6 +66,8 @@ class Bug(models.Model):
     last_modified = models.DateTimeField(auto_now=True)
     status = models.ForeignKey(Status, on_delete=models.CASCADE, default=0)
     description = models.TextField()
+    hours_to_finish = models.PositiveIntegerField(default=1)
+    iteration = models.ForeignKey(Iteration, default=None, blank=True, null=True, on_delete=SET_NULL)
 
     objects = BugManager()
 
@@ -61,4 +77,6 @@ class Bug(models.Model):
     def get_absolute_url(self):
         return reverse('project-detail', kwargs={'pk': self.project_id})
 
-    
+
+
+
