@@ -1,6 +1,6 @@
 from django.urls import path
 
-from .views import BugListView, BugDetailView, BugCreateView, BugUpdateView, BugDeleteView, ProjectCreateView, ProjectView, UserBugListView, ProjectUpdateView, UserProjectsView
+from .views import BugListView, BugDetailView, BugCreateView, BugUpdateView, BugDeleteView, IterationCreateView, ProjectCreateView, ProjectView, UserBugListView, ProjectUpdateView, UserProjectsView, IterationView
 from . import views
 
 
@@ -16,11 +16,15 @@ urlpatterns = [
     path('bug/<int:pk>/update/', BugUpdateView.as_view(), name='bug-update'),
     path('bug/<int:pk>/delete/', BugDeleteView.as_view(), name='bug-delete'),
     path('bug/new/', BugCreateView.as_view(), name='bug-create'),
+    path('allbugs/', BugListView.as_view(), name='bug-list'),
 
     path('project/new/', ProjectCreateView.as_view(), name='project-create'),
     path('project/<int:pk>/', ProjectView.as_view(template_name="bugtrackerApp/project_list.html"), name='project-detail'),
     path('project/<int:pk>/update/', ProjectUpdateView.as_view(template_name="bugtrackerApp/project_form.html"), name='project-update'),
-    path('allbugs/', BugListView.as_view(), name='bug-list')
+
+    path('iteration/new/<int:pk>/', IterationCreateView.as_view(template_name="bugtrackerApp/create_iteration.html"), name='create-iteration'),
+    path('iteration/<int:pk>', IterationView.as_view(template_name="bugtrackerApp/burndown_chart.html"), name='burndown-chart')
+
 ]
 
 
