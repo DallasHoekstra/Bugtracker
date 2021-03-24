@@ -52,7 +52,7 @@ class Iteration(models.Model):
     title = models.CharField(max_length=50)
     start_date = models.DateTimeField(default=timezone.now)
     end_date = models.DateTimeField(default=iteration_end_date)
-    project = models.ForeignKey(Project, on_delete=models.CASCADE)
+    project = models.ForeignKey(Project, default=None, blank=True, null=True, on_delete=models.CASCADE)
     team_members = models.ManyToManyField(User, default=None, blank=True, null=True, related_name="team_members")
     velocity = models.FloatField(default=.7)
 
