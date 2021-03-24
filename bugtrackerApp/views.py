@@ -6,12 +6,15 @@ from django.views.generic.detail import DetailView
 from django.views.generic.edit import CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.contrib.auth.models import User
+import logging
 
-from .models import Bug, Project
-from .managers import ProjectManager
+from .models import Bug, Iteration, Project
+from .managers import ProjectManager, BugtrackerQuerySet
 from .forms import ProjectValidationMixin
 # List, Detail, Create, Update, Delete views are available
 # CRUD: Create, R(List, Detail), Update, Delete
+
+logger = logging.getLogger(__name__)
 
 def home(request):
     # values inside context will be available to the templates
@@ -114,11 +117,61 @@ class ProjectView(LoginRequiredMixin, UserPassesTestMixin, ListView):
             
 class UserProjectsView(LoginRequiredMixin, ListView):
     context_object_name="projects"
+
     def get_queryset(self):
         user_projects = Project.objects.get_user_projects(self.request.user)
         return user_projects
 
-    
+class IterationCreateView(LoginRequiredMixin, CreateView):
+    model = Iteration
+    fields = ['title', 'start_date', 'end_date', 'project', 'team_members', 'velocity']
+
+    def get_success_url(self):
+        return reverse('burndown-chart', kwargs={'pk': self.object.pk})
+
+    # def test_func(self):
+    #     project = Project.objects.get(id=self.kwargs.get('pk'))
+    #     #contributors = project.project_contributors.all()
+    #     lead = project.project_lead
+    #     user = self.request.user
+    #     if user == lead:
+    #         return True
+    #     #if user in contributors:
+    #      #   return True
+    #     return False
+
+class IterationView(LoginRequiredMixin, ListView):
+    context_object_name="bugs"
+    model=Iteration
+
+    def get_queryset(self):
+        iteration = Iteration.objects.get(id=self.kwargs.get('pk'))
+        project_id = iteration.project_id
+        logger.warning(project_id)
+        bugs = Bug.objects.get_project_bugs(project_id)
+        return bugs
+        # for bug in bugs:
+        #     logger.warning(f'bug is {bug}')
+        # if bugs:
+        #     return bugs
+           
+    # def get_object(self):
+    #      return Iteration.objects.get(id=self.kwargs.get('pk'))
+
+
+
+
+
+    # def test_func(self):
+    #     project = Project.objects.get(id=self.kwargs.get('pk'))
+    #     contributors = project.project_contributors.all()
+    #     lead = project.project_lead
+    #     user = self.request.user
+    #     if user == lead:
+    #         return True
+    #     if user in contributors:
+    #         return True
+    #     return False
 
 def about(request):
     context = {
