@@ -1,0 +1,42 @@
+{% extends "bugtrackerApp/base.html" %}
+{% load crispy_forms_tags %}
+<div id="left-panel">
+    {% block content %}
+    <div class="bug-status-container">
+        <p class="title" style="text-align: center;">Unassigned</p>
+        {% for bug in bugs %}
+            <article class="media content-section">
+                <div class="media-body">
+                    <div class="article-metadata">
+                        <div>
+                            {% if bug.lead != "" %}
+                                <p>{{ bug.lead }}</p>
+                            {% else %}
+                                <a class="mr-2" href="{% url 'user-bugs' bug.creator.username %}">{{ bug.creator }}</a>
+                            {% endif %}
+                            
+                            <small class="text-muted" style="text-align: left;">Created: {{ bug.created_at }}</small>
+                            <small class="text-muted" style="text-align: right;">Updated: {{ bug.last_modified }}</small>
+                        </div>
+                    </div>
+                    <h2><a class="article-title" href={% url 'user-bugs' bug.creator.username %}{{ bug.title }}</a></h2>
+                    <p class="article-content">{{ bug.description }}</p>
+                    <p> {{ bug.creator.email }}</p>
+                    <div>
+                        {% if bug.creator == user %}
+                            <a class="btn btn-secondary btn-sm mt-1 mb-1"href="{% url 'bug-update' bug.id %}">Update</a>
+                            <a class="btn btn-danger btn-sm mt-1 mb-1"href="{% url 'bug-delete' bug.id %}">Delete</a>
+                        {% endif %}
+                        <a class="btn btn-secondary btn-sm mt-1 mb-1" href="#">Add to iteration</a>
+                    </div>
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+    {% endblock content %}
+</div>
+<div id="right-panel">
+    <!-- Burndown Chart and statistics should go here. -->
+
+
+</div>
