@@ -107,6 +107,34 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+LOGGING = {
+    'version':1,
+    'disable_existing_loggers':False,
+    'handlers': {
+        'file':{
+            'level':'WARNING',
+            'class':'logging.FileHandler',
+            'filename': 'C:/Users/Anonymous/Bugtracker/Bugtracker/django_error.log',
+        },
+        'file2':{
+            'level':'WARNING',
+            'class':'logging.FileHandler',
+            'filename': 'C:/Users/Anonymous/Bugtracker/Bugtracker/views_error.log',
+        }
+    },
+    'loggers': {
+        'django': {
+            'handlers':['file'],
+            'level':'WARNING',
+        },
+        'bugtrackerApp':{
+            'handlers':['file2'],
+            'level':'WARNING',
+        },
+    }
+}
+
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
