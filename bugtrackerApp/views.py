@@ -1,4 +1,6 @@
+from django.db.models.fields import PositiveIntegerField
 from django.forms import forms
+from django.http.response import JsonResponse
 from django.shortcuts import get_list_or_404, get_object_or_404, render, redirect
 from django.urls import reverse
 from django.views.generic import ListView
@@ -143,6 +145,18 @@ class IterationCreateView(LoginRequiredMixin, CreateView):
 class IterationView(LoginRequiredMixin, ListView):
     context_object_name="bugs"
     model=Iteration
+
+    def post(self, request, *args, **kwargs):
+        for bug in request.POST:
+            logger.warning(bug)
+        request_dict = request.POST
+        # sanitize contents of dictionary here
+        logger.warning(JsonResponse(request.POST, status=200))
+
+        
+
+        return JsonResponse(request.POST, status=200)
+
 
     def get_queryset(self):
         iteration = Iteration.objects.get(id=self.kwargs.get('pk'))
