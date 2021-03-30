@@ -1,7 +1,12 @@
 {% extends "bugtrackerApp/base.html" %}
 {% load crispy_forms_tags %}
+{% load static %}
+{% block extra_scripts %}
+<script src="{% static 'bugtrackerApp/burndown_chart.js' %}"></script>
+{% endblock %}
+{% block content %}
+
 <div id="left-panel">
-    {% block content %}
     <div class="bug-status-container">
         <p class="title" style="text-align: center;">Unassigned</p>
         {% for bug in bugs %}
@@ -14,12 +19,11 @@
                             {% else %}
                                 <a class="mr-2" href="{% url 'user-bugs' bug.creator.username %}">{{ bug.creator }}</a>
                             {% endif %}
-                            
                             <small class="text-muted" style="text-align: left;">Created: {{ bug.created_at }}</small>
                             <small class="text-muted" style="text-align: right;">Updated: {{ bug.last_modified }}</small>
                         </div>
                     </div>
-                    <h2><a class="article-title" href={% url 'user-bugs' bug.creator.username %}{{ bug.title }}</a></h2>
+                    <h2><a class="article-title" href="{% url 'bug-detail' bug.id %}">{{ bug.title }}</a></h2>
                     <p class="article-content">{{ bug.description }}</p>
                     <p> {{ bug.creator.email }}</p>
                     <div>
@@ -27,16 +31,15 @@
                             <a class="btn btn-secondary btn-sm mt-1 mb-1"href="{% url 'bug-update' bug.id %}">Update</a>
                             <a class="btn btn-danger btn-sm mt-1 mb-1"href="{% url 'bug-delete' bug.id %}">Delete</a>
                         {% endif %}
-                        <a class="btn btn-secondary btn-sm mt-1 mb-1" href="#">Add to iteration</a>
+                        <a class="btn btn-secondary btn-sm mt-1 mb-1 add-button" href="#">Add to iteration</a>
                     </div>
                 </div>
             </article>
         {% endfor %}
-    </div>
+    </div>    
     {% endblock content %}
+
 </div>
 <div id="right-panel">
-    <!-- Burndown Chart and statistics should go here. -->
-
-
+            <!-- Burndown Chart and statistics should go here. -->
 </div>
